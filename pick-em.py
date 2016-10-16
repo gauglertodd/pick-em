@@ -37,10 +37,7 @@ for i in range(1,18):
         if entry[0] in digits: probs.append(float(entry[:-1])/100.0)
         else: names.append(entry)
 
-    # print len(names)
-    # print len(probs)
-    # print probs
-    # print names
+
     week_dict = dict(zip(names,probs))
     for team in MASTER_NAMES_LIST:
         if team not in week_dict.keys():
@@ -51,7 +48,7 @@ for i in range(1,18):
 
 results = pd.concat(data_frame_list)
 
-lp_variables = pd.DataFrame([])
+
 
 for team in results.columns.values.tolist():
     variables = []
@@ -82,16 +79,15 @@ for week in range(1,18):
     for team in MASTER_NAMES_LIST:
         survive += temp['{team}_var'.format(team=team)] * temp['{team}_WIN'.format(team=team)]
         die += temp['{team}_var'.format(team=team)] * temp['{team}_LOSE'.format(team=team)]
-    temp_x = pulp.LpVariable('W{0}'.format(week), lowBound=0, upBound=1, cat='Continuous')
+    temp_x = pulp.LpVariable('W{0}'.format(week))
     X.append(temp_x)
-    temp_y = pulp.LpVariable('L{0}'.format(week), lowBound=0, upBound=1)
+    temp_y = pulp.LpVariable('L{0}'.format(week))
     Y.append(temp_y)
     # let W{i} be the probability (well, log-sum probability) that you win in week i
     problem += temp_x == survive
     # let L{i} be the probability (well, log-sum probability) that you lose in week i
     problem += temp_y == die
     # you must chose a team each week
-    problem += survive != 0
 
 for team in MASTER_NAMES_LIST:
     # you may only use each team once
@@ -99,7 +95,7 @@ for team in MASTER_NAMES_LIST:
 
 for i in range(1,18):
     # you may only use one team per week
-    problem += pulp.lpSum(results.transpose()[i][32:64]) <= 1
+    problem += pulp.lpSum(results.transpose()[i][32:64]) == 1
 
 
 # we're looking to maximize the expected value. This is how we do that:
