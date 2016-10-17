@@ -103,6 +103,8 @@ optimize = pulp.LpAffineExpression([])
 
 # i think that the sums of these logs is equivalent to maximizing the expected value in this case.
 problem += pulp.lpSum(X)
+
+# solve
 problem.solve(pulp.GUROBI())
 
 # Let's go ahead and actually get these things
