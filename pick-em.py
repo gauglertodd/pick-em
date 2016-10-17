@@ -101,15 +101,13 @@ for i in range(1, 18):
 # we're looking to maximize the expected value. This is how we do that:
 optimize = pulp.LpAffineExpression([])
 
-# this is the expression for the expected number of weeks you last.
-for i in range(2, 17):
-    optimize += np.log((i - 1)) * pulp.lpSum(X[:i - 1]) + np.log((i - 1)) * Y[i]
-optimize += 17 * pulp.lpSum(X)
-problem += optimize
-
+# i think that the sums of these logs is equivalent to maximizing the expected value in this case.
+problem += pulp.lpSum(X)
 problem.solve(pulp.GUROBI())
 
 # Let's go ahead and actually get these things
 results = [str(i) for i in problem.variables() if i.value() != 0 and i.name[0] not in 'LW']
 results = sorted(results, key=lambda x: kkey(x[-2:]))
 for team in results: print team
+
+import pdb; pdb.set_trace()
